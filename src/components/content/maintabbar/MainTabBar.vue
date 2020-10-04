@@ -5,7 +5,7 @@
       <img slot="item-icon-active" src="~assets/img/tabbar/home_active.svg" alt="">
       <div slot="item-text">首页</div>
     </tab-bar-item>
-    <tab-bar-item path="/catagory" activeColor="pink">
+    <tab-bar-item path="/category" activeColor="pink">
       <img slot="item-icon" src="~assets/img/tabbar/category.svg" alt="">
       <img slot="item-icon-active" src="~assets/img/tabbar/category_active.svg" alt="">
       <div slot="item-text">分类</div>
