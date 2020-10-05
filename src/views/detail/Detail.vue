@@ -6,6 +6,9 @@
       <detail-base-info :goods="goods"></detail-base-info>
       <detail-shop-info :shop="shop"></detail-shop-info>
       <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"></detail-goods-info>
+      <detail-param-info :param-info="paramInfo"></detail-param-info>
+      <detail-comment-info :comment-info="commentInfo"></detail-comment-info>
+      <goods-list :goods="recommends"></goods-list>
     </scroll>
   </div>
 </template>
@@ -16,20 +19,29 @@ import DetailSwiper from "@/views/detail/childComps/DetailSwiper";
 import DetailBaseInfo from "@/views/detail/childComps/DetailBaseInfo";
 import DetailShopInfo from "@/views/detail/childComps/DetailShopInfo";
 import DetailGoodsInfo from "@/views/detail/childComps/DetailGoodsInfo";
+import DetailParamInfo from "@/views/detail/childComps/DetailParamInfo";
+import DetailCommentInfo from "@/views/detail/childComps/DetailCommentInfo";
 
 import Scroll from "@/components/common/scroll/Scroll";
+import GoodsList from "@/components/content/goods/GoodsList";
 
-import {getDetail, Goods, Shop} from "@/network/detail";
+import {getDetail, Goods, Shop, GoodsParam, getRecommend} from "@/network/detail";
+import {debounce} from "@/common/utils";
+import {itemListenerMixin} from "@/common/mixin";
 
 export default {
   name: "Detail",
+  mixins: [itemListenerMixin],
   data() {
     return {
       iid: null,
       topImages: [],
       goods: {},
       shop: {},
-      detailInfo: {}
+      detailInfo: {},
+      paramInfo: {},
+      commentInfo: {},
+      recommends: [],
     }
   },
   created() {
@@ -47,6 +59,17 @@ export default {
       this.shop = new Shop(data.shopInfo)
       // 保存商品的详情数据
       this.detailInfo = data.detailInfo
+      // 获取参数信息
+      this.paramInfo = new GoodsParam(data.itemParam.info, data.itemParam.rule)
+      // 取出评论信息
+      if (data.rate.cRate !== 0) {
+        this.commentInfo = data.rate.list[0]
+      }
+    })
+
+    // 请求推荐数据
+    getRecommend().then(res => {
+      this.recommends = res.data.list
     })
   },
   components: {
@@ -55,13 +78,22 @@ export default {
     DetailBaseInfo,
     DetailShopInfo,
     DetailGoodsInfo,
-    Scroll
+    DetailParamInfo,
+    DetailCommentInfo,
+    Scroll,
+    GoodsList
   },
   methods: {
     imageLoad() {
       this.$refs.scroll.refresh()
     }
+  },
+  mounted() {
+  },
+  destroyed() {
+    this.$bus.$off('itemImgLoad', this.itemImgListener)
   }
+
 }
 </script>
 
@@ -72,11 +104,13 @@ export default {
   background-color: #fff;
   height: 100vh;
 }
+
 .detail-nav {
   position: relative;
   z-index: 9;
   background-color: #fff;
 }
+
 .content {
   height: calc(100% - 44px);
 }

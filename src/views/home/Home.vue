@@ -33,7 +33,8 @@ import {
   getHomeMultidata,
   getHomeGoods
 } from "@/network/home";
-import {debounce} from "@/components/common/utils";
+import {debounce} from "@/common/utils";
+import {itemListenerMixin} from "@/common/mixin";
 
 export default {
   name: "Home",
@@ -47,6 +48,7 @@ export default {
     GoodList,
     BackTop
   },
+  mixins: [itemListenerMixin],
   data() {
     return {
       banners: [],
@@ -60,7 +62,8 @@ export default {
       isShowBackTop: true,
       tabOffsetTop: 0,
       isTabFixed: false,
-      saveY: 0
+      saveY: 0,
+      itemImgListener: null
     }
   },
   computed: {
@@ -82,6 +85,8 @@ export default {
     // console.log('////');
     this.saveY = this.$refs.scroll.getScrollY()
     // console.log(this.saveY);
+    //取消全局监听
+    this.$bus.$off('itemImageLoad', this.itemImgListener)
   },
   created() {
     // 1.请求多个数据
@@ -95,14 +100,6 @@ export default {
   },
   mounted() {
 
-    // 监听item中图片加载完成
-    const refresh = debounce(this.$refs.scroll.refresh, 500)
-    this.$bus.$on('itemImageLoad', () => {
-      refresh()
-    })
-
-    // 获取tabControl的offsetTop
-    // 所欲的组件都有一个属性$el：用于获取组件中的元素
   },
   methods: {
     /*
