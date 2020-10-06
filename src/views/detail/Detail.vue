@@ -11,6 +11,7 @@
       <goods-list :goods="recommends" ref="recommend"></goods-list>
     </scroll>
     <detail-botton-bar :addCart="addToCart"></detail-botton-bar>
+<!--    <toast :message="message" :show="show"></toast>-->
   </div>
 </template>
 
@@ -31,6 +32,10 @@ import {getDetail, Goods, Shop, GoodsParam, getRecommend} from "@/network/detail
 import {debounce} from "@/common/utils";
 import {itemListenerMixin, backTopMixin} from "@/common/mixin";
 
+import {mapActions} from 'vuex'
+
+// import Toast from "@/components/common/toast/Toast";
+
 export default {
   name: "Detail",
   mixins: [itemListenerMixin, backTopMixin],
@@ -46,7 +51,9 @@ export default {
       recommends: [],
       themeTopY: [0, 10, 100, 1000],
       getThemeTopY: null,
-      currentIndex: 0
+      currentIndex: 0,
+      // message: '',
+      // show: false
     }
   },
   created() {
@@ -109,9 +116,11 @@ export default {
     DetailCommentInfo,
     DetailBottonBar,
     Scroll,
-    GoodsList
+    GoodsList,
+    // Toast
   },
   methods: {
+    ...mapActions(["addCart"]),
     imageLoad() {
       this.$refs.scroll.refresh()
 
@@ -150,8 +159,21 @@ export default {
       product.iid = this.iid
 
       // 将商品加入购物车
+      this.addCart(product).then(res => {
+        // this.show = true;
+        // this.message = res;
+        //
+        // setTimeout(() => {
+        //   this.show = false
+        //   this.message = ''
+        // }, 1500)
+
+        this.$toast.show(res, 2000)
+      })
       // this.$store.commit('addCart', product)
-      this.$store.dispatch('addCart', product)
+      // this.$store.dispatch('addCart', product).then(res => {
+      //   console.log(res);
+      // })
     }
   },
   mounted() {
