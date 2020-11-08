@@ -2,11 +2,13 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from "@/router";
 import store from "@/store";
-
+import $ from 'jquery'
 import FastClick from 'fastclick'
 import VueLazyload from "vue-lazyload";
 
 import toast from '@/components/common/toast'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/js/bootstrap.min'
 
 Vue.config.productionTip = false
 
